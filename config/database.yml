@@ -1,0 +1,5 @@
+adapter: postgresql
+database: parsed_data
+encoding: unicode
+pool: 5
+timeout: 5000
