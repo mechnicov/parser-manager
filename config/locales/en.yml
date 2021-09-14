@@ -1,0 +1,30 @@
+en:
+  activerecord:
+    models:
+      page: Parsed page
+    attributes:
+      page:
+        file_type: File type
+        parsed_data: Parsed string
+        url: URL
+    errors:
+      models:
+        page:
+          attributes:
+            url:
+              blank: is blank
+  errors:
+    messages:
+      invalid_url: is not a valid HTTP URL
+      unsupported_file_type: Unsupported file type
+  grape:
+    descriptions:
+      api:
+        v1:
+          parse:
+            post: Parse the file
+    errors:
+      format: ! '%{attributes} %{message}'
+      messages:
+        presence: is missing
+  was_parsed: '%{url} was parsed successfully'

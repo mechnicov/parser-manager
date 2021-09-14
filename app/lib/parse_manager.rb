@@ -5,7 +5,7 @@ class ParseManager
 
   class UnsupportedFileTypeError < Error
     def message
-      'Unsupported file type'
+      I18n.t('errors.messages.unsupported_file_type')
     end
   end
 
