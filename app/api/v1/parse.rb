@@ -10,7 +10,8 @@ module API
       end
 
       rescue_from :all, ->(e) { server_error!(e.message, 500) }
-      rescue_from ParseManager::UnsupportedFileTypeError, ->(e) { server_error!(e.message, 422) }
+      rescue_from ParseManager::UnsupportedFileTypeError, ActiveRecord::RecordInvalid,
+        ->(e) { server_error!(e.message, 422) }
       rescue_from :grape_exceptions
 
       desc 'Parse the file'

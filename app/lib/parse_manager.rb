@@ -56,6 +56,8 @@ class ParseManager
       page.parsed_data = args[:parsed_data]
       page.file_type = file_type
       page.save
+
+      raise(ActiveRecord::RecordInvalid.new, page.errors.full_messages.join('. ')) unless page.valid?
     end
   end
 end
