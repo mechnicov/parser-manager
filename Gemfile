@@ -9,6 +9,7 @@ ruby File.read('.ruby-version').strip
 gem 'grape'
 gem 'puma'
 gem 'activerecord', '6.1.4.1'
+gem 'i18n'
 gem 'rake'
 gem 'pg'
 gem 'mimemagic'

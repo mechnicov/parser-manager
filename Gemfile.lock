@@ -90,6 +90,7 @@ DEPENDENCIES
   activerecord (= 6.1.4.1)
   docx
   grape
+  i18n
   mimemagic
   msworddoc-extractor
   pdf-reader
