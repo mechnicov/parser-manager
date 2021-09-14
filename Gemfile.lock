@@ -47,6 +47,9 @@ GEM
     hashery (2.1.2)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
+    mimemagic (0.4.3)
+      nokogiri (~> 1)
+      rake
     minitest (5.14.4)
     msworddoc-extractor (0.2.0)
       ruby-ole
@@ -87,6 +90,7 @@ DEPENDENCIES
   activerecord (= 6.1.4.1)
   docx
   grape
+  mimemagic
   msworddoc-extractor
   pdf-reader
   pg
