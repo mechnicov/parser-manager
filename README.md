@@ -4,7 +4,7 @@
 
 Parser gets PDF, DOC, DOCX or HTML file via API and saves parsed data to the database.
 
-Implemented in Ruby using Active Record and PostgreSQL.
+Implemented in Ruby 3.0.1 using Active Record and PostgreSQL.
 
 ### Launching
 
@@ -20,7 +20,7 @@ $ bin/setup
 $ bundle exec rackup
 ```
 
-3. Send POST request to `/api/v1/parse`
+3. Send POST request to `http://127.0.0.1:9292/api/v1/parse`
 
 ### License
 
