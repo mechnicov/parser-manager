@@ -14,6 +14,8 @@ Implemented in Ruby 3.0.1 using Active Record and PostgreSQL.
 $ bin/setup
 ```
 
+Fill your credentials into `env`
+
 2. Run the server
 
 ```bash
@@ -21,6 +23,12 @@ $ bundle exec rackup
 ```
 
 3. Send POST request to `http://127.0.0.1:9292/api/v1/parse`
+
+You can also use docker
+
+```bash
+$ docker-compose up
+```
 
 ### License
 

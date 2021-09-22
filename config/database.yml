@@ -3,3 +3,7 @@ database: parsed_data
 encoding: unicode
 pool: 5
 timeout: 5000
+host: <%= ENV['POSTGRES_HOST'] %>
+port: <%= ENV['POSTGRES_PORT'] %>
+user: <%= ENV['POSTGRES_USER'] %>
+password: <%= ENV['POSTGRES_PASSWORD'] %>

@@ -17,6 +17,7 @@ GEM
     docx (0.6.2)
       nokogiri (~> 1.10, >= 1.10.4)
       rubyzip (~> 2.0)
+    dotenv (2.7.6)
     dry-configurable (0.12.1)
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.5, >= 0.5.0)
@@ -78,6 +79,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord (= 6.1.4.1)
   docx
+  dotenv
   grape
   i18n
   mimemagic

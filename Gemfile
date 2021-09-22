@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
-ruby File.read('.ruby-version').strip
+ruby '3.0.1'
 
 gem 'grape'
 gem 'puma'
@@ -15,3 +15,4 @@ gem 'pg'
 gem 'mimemagic'
 gem 'docx'
 gem 'msworddoc-extractor'
+gem 'dotenv'
