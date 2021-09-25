@@ -13,6 +13,9 @@ FileUtils.chdir APP_ROOT do
   system! 'gem install bundler --conservative'
   system('bundle check') || system!('bundle install')
 
+  puts "\n== Copying sample files =="
+  FileUtils.cp '.env.example', '.env' unless File.exist?('.env')
+
   puts "\n== Preparing database =="
   system! 'bundle exec rake db:setup'
 end

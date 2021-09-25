@@ -2,10 +2,10 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'pg'
-require 'active_record'
-require 'yaml'
+require 'dotenv/load'
+require_relative 'app/lib/database_connector'
 
-connection_details = YAML::load(File.read('config/database.yml'))
+connection_details = DatabaseConnector.configuration
 
 namespace :db do
   desc 'Migrate the database'
