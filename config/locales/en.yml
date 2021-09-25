@@ -7,14 +7,9 @@ en:
         file_type: File type
         parsed_data: Parsed string
         url: URL
-    errors:
-      models:
-        page:
-          attributes:
-            url:
-              blank: is blank
   errors:
     messages:
+      blank: is blank
       invalid_url: is not a valid HTTP URL
       unsupported_file_type: Unsupported file type
   grape:

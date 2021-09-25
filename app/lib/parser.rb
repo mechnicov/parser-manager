@@ -1,4 +1,3 @@
-require 'pdf-reader'
 require 'docx'
 require 'msworddoc-extractor'
 
@@ -20,7 +19,9 @@ class Parser
   end
 
   def from_pdf
-    PDF::Reader.new(file).pages.map(&:text).join("\n").strip
+    tmp_path = "#{file.path}.tmp"
+    `pdftotext #{file.path} #{tmp_path} -layout`
+    File.read(tmp_path).strip
   end
 
   def from_doc

@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13
+    ports:
+      - 5555:5432
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    env_file:
+      - .env
+  api:
+    build: .
+    command: sh -c 'rake db:setup && bundle exec rackup -o 0.0.0.0 -p 9292'
+    ports:
+      - 9292:9292
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file:
+      - .env
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.tests
+    command: tail -f /dev/null
+    depends_on:
+      - api
+      - db
