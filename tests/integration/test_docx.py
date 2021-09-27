@@ -1,5 +1,4 @@
 import configparser
-import logging
 import os
 import unittest
 
@@ -82,7 +81,7 @@ class TestPDF(unittest.TestCase):
         parsed_data, file_type = self.cursor.fetchone()
         self.assertEqual(parsed_data, 'Привет, как дела\nВсё хорошо!\nСупер')
         self.assertEqual(file_type, 'docx')
-        
+
     def test_no_file(self):
         data = {
             'url': 'http://test.url/docx.docx',
