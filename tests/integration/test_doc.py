@@ -83,56 +83,6 @@ class TestPDF(unittest.TestCase):
         self.assertEqual(parsed_data, 'Привет, как дела\nВсё хорошо!\nСупер')
         self.assertEqual(file_type, 'doc')
     
-    def test_no_url(self):
-        data = {
-        }
-        files = {
-            'file': (
-                'doc.doc',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'doc.doc'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.bad_request)
-    
-    def test_empty_url(self):
-        data = {
-            'url': '',
-        }
-        files = {
-            'file': (
-                'doc.doc',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'doc.doc'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
-    
-    def test_invaild_url(self):
-        data = {
-            'url': 'test.url/doc.doc',
-        }
-        files = {
-            'file': (
-                'doc.doc',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'doc.doc'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
-    
     def test_no_file(self):
         data = {
             'url': 'http://test.url/doc.doc',

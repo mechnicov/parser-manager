@@ -91,56 +91,6 @@ class TestPDF(unittest.TestCase):
         )
         self.assertEqual(file_type, 'pdf')
     
-    def test_no_url(self):
-        data = {
-        }
-        files = {
-            'file': (
-                'pdf.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'pdf.pdf'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.bad_request)
-    
-    def test_empty_url(self):
-        data = {
-            'url': '',
-        }
-        files = {
-            'file': (
-                'pdf.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'pdf.pdf'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
-    
-    def test_invaild_url(self):
-        data = {
-            'url': 'test.url/pdf.pdf',
-        }
-        files = {
-            'file': (
-                'pdf.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'pdf.pdf'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
-    
     def test_no_file(self):
         data = {
             'url': 'http://test.url/pdf.pdf',

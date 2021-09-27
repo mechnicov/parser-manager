@@ -83,56 +83,6 @@ class TestPDF(unittest.TestCase):
         self.assertEqual(parsed_data, 'body\n  \n    ddd\n    \n      paragraph kursiv')
         self.assertEqual(file_type, 'html')
     
-    def test_no_url(self):
-        data = {
-        }
-        files = {
-            'file': (
-                'rr',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'rr'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.bad_request)
-    
-    def test_empty_url(self):
-        data = {
-            'url': '',
-        }
-        files = {
-            'file': (
-                'rr',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'rr'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
-    
-    def test_invaild_url(self):
-        data = {
-            'url': 'test.url/rr',
-        }
-        files = {
-            'file': (
-                'rr',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'rr'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
-    
     def test_no_file(self):
         data = {
             'url': 'http://test.url/rr',
