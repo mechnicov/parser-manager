@@ -52,7 +52,7 @@ class TestPDF(unittest.TestCase):
             self.cursor.execute(
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
-            self.assertEqual(parsed_data, 'Привет, как дела\nВсё хорошо!\nСупер')
+            self.assertEqual(parsed_data, 'Привет, как\tдела\nВсё хорошо!\n\tСупер')
             self.assertEqual(file_type, 'docx')
     
     def test_valid_file_with_invalid_ext(self):
@@ -71,7 +71,7 @@ class TestPDF(unittest.TestCase):
             self.cursor.execute(
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
-            self.assertEqual(parsed_data, 'Привет, как дела\nВсё хорошо!\nСупер')
+            self.assertEqual(parsed_data, 'Привет, как\tдела\nВсё хорошо!\n\tСупер')
             self.assertEqual(file_type, 'docx')
 
     def test_no_file(self):
