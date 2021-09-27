@@ -1,5 +1,6 @@
 import configparser
 import os
+import re
 import unittest
 
 import psycopg2
@@ -56,7 +57,11 @@ class TestPDF(unittest.TestCase):
         self.cursor.execute(
             f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
         parsed_data, file_type = self.cursor.fetchone()
-        self.assertEqual(parsed_data, 'body\n  \n    ddd\n    \n      paragraph kursiv')
+        self.assertIsNotNone(
+            re.fullmatch(
+                r'body\n *\n *ddd\n *\n *paragraph kursiv', parsed_data
+            )
+        )
         self.assertEqual(file_type, 'html')
     
     def test_valid_file_with_invalid_ext(self):
@@ -79,7 +84,11 @@ class TestPDF(unittest.TestCase):
         self.cursor.execute(
             f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
         parsed_data, file_type = self.cursor.fetchone()
-        self.assertEqual(parsed_data, 'body\n  \n    ddd\n    \n      paragraph kursiv')
+        self.assertIsNotNone(
+            re.fullmatch(
+                r'body\n *\n *ddd\n *\n *paragraph kursiv', parsed_data
+            )
+        )
         self.assertEqual(file_type, 'html')
     
     def test_no_file(self):
