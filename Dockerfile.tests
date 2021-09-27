@@ -4,10 +4,12 @@ RUN apk update && \
     apk add --no-cache --virtual build-deps gcc python3-dev musl-dev && \
     apk add postgresql-dev
 
+COPY ./.env .
+
 WORKDIR /tests
 
-COPY ./tests/requests.txt .
+COPY ./tests/requirements.txt .
 
-RUN pip install -r requests.txt
+RUN pip install -r requirements.txt
 
 COPY ./tests .
