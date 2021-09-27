@@ -38,84 +38,58 @@ class TestPDF(unittest.TestCase):
         self.cursor = connect_db()
 
     def test_valid_file(self):
-        data = {
-            'url': 'http://test.url/rr',
-        }
-        files = {
-            'file': (
-                'rr',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'rr'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.created)
-        # Check content written to database
-        self.cursor.execute(
-            f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
-        parsed_data, file_type = self.cursor.fetchone()
-        self.assertIsNotNone(
-            re.fullmatch(
-                r'body\n *\n *ddd\n *\n *paragraph kursiv', parsed_data
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'rr')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/rr',
+            }
+            files = {
+                'file': ('rr', f)    
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.created)
+            # Check content written to database
+            self.cursor.execute(
+                f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
+            parsed_data, file_type = self.cursor.fetchone()
+            self.assertIsNotNone(
+                re.fullmatch(
+                    r'body\n *\n *ddd\n *\n *paragraph kursiv', parsed_data
+                )
             )
-        )
-        self.assertEqual(file_type, 'html')
+            self.assertEqual(file_type, 'html')
     
     def test_valid_file_with_invalid_ext(self):
-        data = {
-            'url': 'http://test.url/rr.doc',  # This file have a .pdf type
-        }
-        files = {
-            'file': (
-                'invalid.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'rr.doc'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.created)
-        # Check content written to database
-        self.cursor.execute(
-            f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
-        parsed_data, file_type = self.cursor.fetchone()
-        self.assertIsNotNone(
-            re.fullmatch(
-                r'body\n *\n *ddd\n *\n *paragraph kursiv', parsed_data
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'rr.doc')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/rr.doc',  # This file have a .pdf type
+            }
+            files = {
+                'file': ('invalid.html', f)    
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.created)
+            # Check content written to database
+            self.cursor.execute(
+                f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
+            parsed_data, file_type = self.cursor.fetchone()
+            self.assertIsNotNone(
+                re.fullmatch(
+                    r'body\n *\n *ddd\n *\n *paragraph kursiv', parsed_data
+                )
             )
-        )
-        self.assertEqual(file_type, 'html')
+            self.assertEqual(file_type, 'html')
     
     def test_no_file(self):
         data = {
             'url': 'http://test.url/rr',
         }
-        files = { 
-        }
+        files = {}
         r = requests.post(url=URL, data=data, files=files)
         self.assertEqual(r.status_code, requests.codes.bad_request)
-    
-    def test_unsopported_file(self):
-        data = {
-            'url': 'http://test.url/img.jpg',
-        }
-        files = {
-            'file': (
-                'img.jpg',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'img.jpg'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
 
 
 if __name__ == '__main__':
