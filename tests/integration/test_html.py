@@ -95,14 +95,6 @@ class TestPDF(unittest.TestCase):
             }
             r = requests.post(url=URL, data=data, files=files)
             self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
-    
-    def test_no_file(self):
-        data = {
-            'url': 'http://test.url/rr',
-        }
-        files = {}
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.bad_request)
 
 
 if __name__ == '__main__':

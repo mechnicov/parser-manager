@@ -8,7 +8,7 @@ import requests
 URL = "http://127.0.0.1:9292/api/v1/parse"
 
 
-class TestBadRequests(unittest.TestCase):
+class TestURL(unittest.TestCase):
     
     def test_no_url(self):
         filepath = os.path.join(
@@ -60,6 +60,15 @@ class TestBadRequests(unittest.TestCase):
             }
             r = requests.post(url=URL, data=data, files=files)
             self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
+    
+    def test_no_file(self):
+        data = {
+            'url': 'http://test.url/some.file',
+        }
+        files = { 
+        }
+        r = requests.post(url=URL, data=data, files=files)
+        self.assertEqual(r.status_code, requests.codes.bad_request)
 
 
 if __name__ == '__main__':
