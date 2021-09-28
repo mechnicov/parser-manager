@@ -19,11 +19,3 @@ services:
       - db
     env_file:
       - .env
-  tests:
-    build:
-      context: .
-      dockerfile: Dockerfile.tests
-    command: tail -f /dev/null
-    depends_on:
-      - api
-      - db
