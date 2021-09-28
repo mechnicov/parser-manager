@@ -73,6 +73,19 @@ class TestPDF(unittest.TestCase):
             parsed_data, file_type = self.cursor.fetchone()
             self.assertEqual(parsed_data, 'Привет, как\tдела\nВсё хорошо!\n\tСупер')
             self.assertEqual(file_type, 'doc')
+
+    def test_empty_file(self):
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'empty.doc')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/empty.doc',
+            }
+            files = {
+                'file': ('empty.doc', f)    
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
     
     def test_no_file(self):
         data = {
