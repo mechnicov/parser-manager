@@ -31,7 +31,7 @@ def connect_db():
     return cur
 
 
-class TestPDF(unittest.TestCase):
+class TestDOCX(unittest.TestCase):
     def setUp(self):
         # Load test data
         self.cursor = connect_db()
