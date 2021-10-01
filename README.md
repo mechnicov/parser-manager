@@ -30,6 +30,8 @@ You can also use docker
 $ docker-compose up
 ```
 
+API documentation is available on `http://127.0.0.1:9292/docs`
+
 ### License
 
 MIT – see `LICENSE`
