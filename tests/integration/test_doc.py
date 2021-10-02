@@ -74,6 +74,25 @@ class TestDOC(unittest.TestCase):
             self.assertEqual(parsed_data, 'Привет, как\tдела\nВсё хорошо!\n\tСупер')
             self.assertEqual(file_type, 'doc')
 
+    def test_valid_file_with_breaks(self):
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'break.doc')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/break.doc',
+            }
+            files = {
+                'file': ('break.doc', f)    
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.created)
+            # Check content written to database
+            self.cursor.execute(
+                f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
+            parsed_data, file_type = self.cursor.fetchone()
+            self.assertEqual(parsed_data, 'Привет, как\tдела\n::::::\nВсё хорошо!\n\tСупер')
+            self.assertEqual(file_type, 'doc')
+
     def test_empty_file(self):
         filepath = os.path.join(
             os.path.dirname(__file__), 'fixtures', 'empty.doc')
