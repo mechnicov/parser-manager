@@ -55,7 +55,7 @@ class TestPDF(unittest.TestCase):
             parsed_data, file_type = self.cursor.fetchone()
             self.assertIsNotNone(
                 re.fullmatch(
-                    r'Привет, как\tдела\n+Всё хорошо!\n+\tСупер', parsed_data
+                    r'Привет, как *дела\n+Всё хорошо!\n+ *Супер', parsed_data
                 )
             )
             self.assertEqual(file_type, 'pdf')
@@ -78,7 +78,7 @@ class TestPDF(unittest.TestCase):
             parsed_data, file_type = self.cursor.fetchone()
             self.assertIsNotNone(
                 re.fullmatch(
-                    r'Привет, как\tдела\n+Всё хорошо!\n+\tСупер', parsed_data
+                    r'Привет, как *дела\n+Всё хорошо!\n+ *Супер', parsed_data
                 )
             )
             self.assertEqual(file_type, 'pdf')
@@ -101,7 +101,7 @@ class TestPDF(unittest.TestCase):
             parsed_data, file_type = self.cursor.fetchone()
             self.assertIsNotNone(
                 re.fullmatch(
-                    r'Привет, как\tдела\n+Всё хорошо!\n+\tСупер', parsed_data
+                    r'Привет, как *дела\n+Всё хорошо!\n+ *Супер', parsed_data
                 )
             )
             self.assertEqual(file_type, 'pdf')
