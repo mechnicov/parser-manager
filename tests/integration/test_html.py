@@ -83,6 +83,29 @@ class TestHTML(unittest.TestCase):
             )
             self.assertEqual(file_type, 'html')
 
+    def test_valid_file_with_tags(self):
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'body.html')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/body.html',
+            }
+            files = {
+                'file': ('body.html', f)    
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.created)
+            # Check content written to database
+            self.cursor.execute(
+                f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
+            parsed_data, file_type = self.cursor.fetchone()
+            self.assertIsNotNone(
+                re.fullmatch(
+                    r'body\n *\n *ddd\n *\n *paragraph kursiv\n *\n *<body>everybody</body>', parsed_data
+                )
+            )
+            self.assertEqual(file_type, 'html')
+
     def test_empty_file(self):
         filepath = os.path.join(
             os.path.dirname(__file__), 'fixtures', 'empty.html')
