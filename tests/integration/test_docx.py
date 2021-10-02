@@ -91,7 +91,7 @@ class TestDOCX(unittest.TestCase):
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
             self.assertEqual(parsed_data, 'Привет, как\tдела\n::::::\nВсё хорошо!\n\tСупер')
-            self.assertEqual(file_type, 'doc')
+            self.assertEqual(file_type, 'docx')
 
     def test_empty_file(self):
         filepath = os.path.join(
