@@ -1,19 +1,10 @@
-"""
-- сгенерировать данные;
-- положить их в базу данных;
-- отправить REST-запросы;
-- сверить результаты с ожидаемыми;
-- сгенерировать отчет по результатам.
-
-"""
-
-import logging
+import configparser
 import os
+import re
+import unittest
+
 import psycopg2
 import requests
-import unittest
-from requests.api import request
-import yaml
 
 
 URL = "http://127.0.0.1:9292/api/v1/parse"
@@ -21,22 +12,21 @@ URL = "http://127.0.0.1:9292/api/v1/parse"
 
 def connect_db():
     config_path = os.path.join(
-        os.path.dirname(__file__), '..', '..', 'config', 'database.yml')
+        os.path.dirname(__file__), '..', '..', '.env')
     with open(config_path) as f:
-        db_config = yaml.safe_load(f)
+        s = '[db_config]\n' + f.read()
+    config = configparser.ConfigParser()
+    config.read_string(s)
 
-    try: 
-        conn = psycopg2.connect(
-            user=db_config['user'],
-            # пароль, который указали при установке PostgreSQL
-            password=db_config['password'],
-            host="127.0.0.1",
-            port="5432",
-            database=db_config['database']
-        )
-    except: 
-        logging.error("Unable to connect to the database.") 
-        return None
+    db_config = config['db_config']
+
+    conn = psycopg2.connect(
+        user=db_config['POSTGRES_USER'],
+        password=db_config['POSTGRES_PASSWORD'],
+        host='0.0.0.0',
+        port='5555',
+        database=db_config['POSTGRES_DB']
+    )
 
     cur = conn.cursor() 
     return cur
@@ -48,143 +38,99 @@ class TestPDF(unittest.TestCase):
         self.cursor = connect_db()
 
     def test_valid_file(self):
-        data = {
-            'url': 'http://test.url/pdf.pdf',
-        }
-        files = {
-            'file': (
-                'pdf.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'pdf.pdf'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.created)
-        # Check content written to database
-        self.cursor.execute(
-            f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
-        parsed_data, file_type = self.cursor.fetchone()
-        self.assertEqual(parsed_data, 'Привет, как дела\nВсё хорошо!\n\nСупер')
-        self.assertEqual(file_type, 'pdf')
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'pdf.pdf')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/pdf.pdf',
+            }
+            files = {
+                'file': ('pdf.pdf', f)
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.created)
+            # Check content written to database
+            self.cursor.execute(
+                f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
+            parsed_data, file_type = self.cursor.fetchone()
+            self.assertIsNotNone(
+                re.fullmatch(
+                    r'Привет, как\tдела\n+Всё хорошо!\n+\tСупер', parsed_data
+                )
+            )
+            self.assertEqual(file_type, 'pdf')
     
     def test_valid_file_with_invalid_ext(self):
-        data = {
-            'url': 'http://test.url/pdf.docx',  # This file have a .pdf type
-        }
-        files = {
-            'file': (
-                'invalid.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'pdf.docx'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.created)
-        # Check content written to database
-        self.cursor.execute(
-            f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
-        parsed_data, file_type = self.cursor.fetchone()
-        self.assertEqual(parsed_data, 'Привет, как дела\nВсё хорошо!\n\nСупер')
-        self.assertEqual(file_type, 'pdf')
-    
-    def test_no_url(self):
-        data = {
-        }
-        files = {
-            'file': (
-                'pdf.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'pdf.pdf'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.bad_request)
-    
-    def test_empty_url(self):
-        data = {
-            'url': '',
-        }
-        files = {
-            'file': (
-                'pdf.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'pdf.pdf'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
-    
-    def test_invaild_url(self):
-        data = {
-            'url': 'test.url/pdf.pdf',
-        }
-        files = {
-            'file': (
-                'pdf.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'pdf.pdf'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
-    
-    def test_no_file(self):
-        data = {
-            'url': 'http://test.url/pdf.pdf',
-        }
-        files = { 
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.bad_request)
-    
-    def test_unsopported_file(self):
-        data = {
-            'url': 'http://test.url/img.jpg',
-        }
-        files = {
-            'file': (
-                'img.jpg',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'img.jpg'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'pdf.docx')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/pdf.docx',  # This file have a .pdf type
+            }
+            files = {
+                'file': ('invalid.pdf', f)    
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.created)
+            # Check content written to database
+            self.cursor.execute(
+                f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
+            parsed_data, file_type = self.cursor.fetchone()
+            self.assertIsNotNone(
+                re.fullmatch(
+                    r'Привет, как\tдела\n+Всё хорошо!\n+\tСупер', parsed_data
+                )
+            )
+            self.assertEqual(file_type, 'pdf')
+
+    def test_rotated_file(self):
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'rotate.pdf')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/rotate.pdf',
+            }
+            files = {
+                'file': ('rotate.pdf', f)
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.created)
+            # Check content written to database
+            self.cursor.execute(
+                f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
+            parsed_data, file_type = self.cursor.fetchone()
+            self.assertIsNotNone(
+                re.fullmatch(
+                    r'Привет, как\tдела\n+Всё хорошо!\n+\tСупер', parsed_data
+                )
+            )
+            self.assertEqual(file_type, 'pdf')
+
+    def test_empty_file(self):
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'empty.pdf')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/empty.pdf',
+            }
+            files = {
+                'file': ('empty.pdf', f)    
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.unprocessable_entity)
 
     def test_big_file(self):
-        data = {
-            'url': 'http://test.url/big.pdf',
-        }
-        files = {
-            'file': (
-                'pdf.pdf',
-                open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'fixtures', 'big.pdf'),
-                    'rb',
-                ),
-            )    
-        }
-        r = requests.post(url=URL, data=data, files=files)
-        self.assertEqual(r.status_code, requests.codes.created)
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'big.pdf')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/big.pdf',
+            }
+            files = {
+                'file': ('pdf.pdf', f)    
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.created)
 
 
 if __name__ == '__main__':
