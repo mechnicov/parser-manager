@@ -55,11 +55,7 @@ class TestHTML(unittest.TestCase):
             self.cursor.execute(
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
-            self.assertIsNotNone(
-                re.fullmatch(
-                    r'body\n *\n *ddd\n *\n *paragraph kursiv', parsed_data
-                )
-            )
+            self.assertEqual(unificate(parsed_data), unificate('body\n  \n  ddd\n  \n  paragraph kursiv'))
             self.assertEqual(file_type, 'html')
     
     def test_valid_file_with_invalid_ext(self):
@@ -78,11 +74,7 @@ class TestHTML(unittest.TestCase):
             self.cursor.execute(
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
-            self.assertIsNotNone(
-                re.fullmatch(
-                    r'body\n *\n *ddd\n *\n *paragraph kursiv', parsed_data
-                )
-            )
+            self.assertEqual(unificate(parsed_data), unificate('body\n  \n  ddd\n  \n  paragraph kursiv'))
             self.assertEqual(file_type, 'html')
 
     def test_valid_file_with_tags(self):
@@ -101,11 +93,7 @@ class TestHTML(unittest.TestCase):
             self.cursor.execute(
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
-            self.assertIsNotNone(
-                re.fullmatch(
-                    r'body\n *\n *ddd\n *\n *paragraph kursiv\n *\n *<body>everybody</body>', parsed_data
-                )
-            )
+            self.assertEqual(unificate(parsed_data), unificate('body\n  \n  ddd\n  \n  paragraph kursiv\n  \n  <body>everybody</body>'))
             self.assertEqual(file_type, 'html')
 
     def test_symbols(self):

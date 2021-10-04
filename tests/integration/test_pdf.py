@@ -55,11 +55,7 @@ class TestPDF(unittest.TestCase):
             self.cursor.execute(
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
-            self.assertIsNotNone(
-                re.fullmatch(
-                    r'Привет, как *дела\n+Всё хорошо!\n+ *Супер', parsed_data
-                )
-            )
+            self.assertEqual(unificate(parsed_data), unificate('Привет, как\tдела\nВсё хорошо!\n\tСупер'))
             self.assertEqual(file_type, 'pdf')
     
     def test_valid_file_with_invalid_ext(self):
@@ -78,11 +74,7 @@ class TestPDF(unittest.TestCase):
             self.cursor.execute(
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
-            self.assertIsNotNone(
-                re.fullmatch(
-                    r'Привет, как *дела\n+Всё хорошо!\n+ *Супер', parsed_data
-                )
-            )
+            self.assertEqual(unificate(parsed_data), unificate('Привет, как\tдела\nВсё хорошо!\n\tСупер'))
             self.assertEqual(file_type, 'pdf')
 
     def test_rotated_file(self):
@@ -101,11 +93,7 @@ class TestPDF(unittest.TestCase):
             self.cursor.execute(
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
-            self.assertIsNotNone(
-                re.fullmatch(
-                    r'Привет, как *дела\n+Всё хорошо!\n+ *Супер', parsed_data
-                )
-            )
+            self.assertEqual(unificate(parsed_data), unificate('Привет, как дела\nВсё хорошо!\nСупер'))
             self.assertEqual(file_type, 'pdf')
 
     def test_symbols(self):
