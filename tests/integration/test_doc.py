@@ -5,6 +5,8 @@ import unittest
 import psycopg2
 import requests
 
+from create_regular_string import unificate
+
 
 URL = "http://127.0.0.1:9292/api/v1/parse"
 
@@ -91,6 +93,28 @@ class TestDOC(unittest.TestCase):
                 f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
             parsed_data, file_type = self.cursor.fetchone()
             self.assertEqual(parsed_data, 'Привет, как\tдела\n::::::\nВсё хорошо!\n\tСупер')
+            self.assertEqual(file_type, 'doc')
+
+    def test_symbols(self):
+        filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'symbols.doc')
+        check_filepath = os.path.join(
+            os.path.dirname(__file__), 'fixtures', 'symbols.txt')
+        with open(filepath, 'rb') as f:
+            data = {
+                'url': 'http://test.url/symbols.doc',
+            }
+            files = {
+                'file': ('symbols.doc', f)
+            }
+            r = requests.post(url=URL, data=data, files=files)
+            self.assertEqual(r.status_code, requests.codes.created)
+            # Check content written to database
+            self.cursor.execute(
+                f"SELECT parsed_data, file_type FROM pages WHERE url = '{data['url']}'")
+            parsed_data, file_type = self.cursor.fetchone()
+            with open(check_filepath, 'r') as cf:
+                self.assertEqual(unificate(parsed_data), unificate(cf.read()))
             self.assertEqual(file_type, 'doc')
 
     def test_empty_file(self):
