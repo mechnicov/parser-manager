@@ -15,5 +15,3 @@ RUN gem update --system \
     && bundle install
 
 COPY . .
-
-RUN rm -rf tests
