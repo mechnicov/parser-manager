@@ -3,17 +3,6 @@ module API
     class Parse < Grape::API
       version :v1, using: :path
 
-      helpers do
-        def server_error!(message, status)
-          error!({ error: message }, status)
-        end
-      end
-
-      rescue_from :all, ->(e) { server_error!(e.message, 500) }
-      rescue_from ParseManager::UnsupportedFileTypeError, ActiveRecord::RecordInvalid,
-        ->(e) { server_error!(e.message, 422) }
-      rescue_from :grape_exceptions
-
       desc I18n.t('grape.descriptions.api.v1.parse.post')
       params do
         requires :url, type: String
