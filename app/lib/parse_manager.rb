@@ -27,7 +27,7 @@ class ParseManager
 
   def call
     identify_type
-    persist(parsed_data: parsed_data, url: url)
+    persist(parsed_data: parsed_data, url: url, file_type: file_type)
   end
 
   private
@@ -52,12 +52,6 @@ class ParseManager
   end
 
   def persist(**args)
-    Page.where(url: args[:url]).first_or_initialize.tap do |page|
-      page.parsed_data = args[:parsed_data]
-      page.file_type = file_type
-      page.save
-
-      raise(ActiveRecord::RecordInvalid.new, page.errors.full_messages.join('. ')) unless page.valid?
-    end
+    Pages::Persist.(**args)
   end
 end
