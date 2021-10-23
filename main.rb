@@ -8,17 +8,6 @@ module API
     format :json
     prefix :api
 
-    helpers do
-      def server_error!(message, status)
-        error!({ error: message }, status)
-      end
-    end
-
-    rescue_from :all, ->(e) { server_error!(e.message, 500) }
-    rescue_from ParseManager::UnsupportedFileTypeError, ActiveRecord::RecordInvalid,
-      ->(e) { server_error!(e.message, 422) }
-    rescue_from :grape_exceptions
-
     mount V1::Parse
 
     add_swagger_documentation(

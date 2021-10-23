@@ -1,8 +1,6 @@
 module API
   module V1
-    class Parse < Grape::API
-      version :v1, using: :path
-
+    class Parse < Base
       desc I18n.t('grape.descriptions.api.v1.parse.post')
       params do
         requires :url, type: String
